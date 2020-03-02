@@ -1,0 +1,18 @@
+consul_server_addr: 192.168.10.16
+munge_key: "{{ lookup('hashi_vault', 'secret=secret/ansible/slurm:munge_base64') }}"
+munge_key_is_b64encoded: true
+
+cephfs_client_mapping:
+    - src: "/tools"
+      dst: "/tools"
+      id: "tools"
+      key: "{{ lookup('hashi_vault', 'secret=secret/ansible/cephfs/tools:token') }}"
+    - src: "/people"
+      dst: "/usr/people"
+      id: "people"
+      key: "{{ lookup('hashi_vault', 'secret=secret/ansible/cephfs/people:token') }}"
+    - src: "/projects/galaxy"
+      dst: "/projects/galaxy"
+      id: "{{ lookup('hashi_vault', 'secret=secret/ansible/cephfs/galaxy:id') }}"
+      key: "{{ lookup('hashi_vault', 'secret=secret/ansible/cephfs/galaxy:token') }}"
+  

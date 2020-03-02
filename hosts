@@ -1,0 +1,16 @@
+[jupyterhubservers]
+jupyterlab.sanbi.ac.za ansible_python_interpreter=/usr/bin/python3
+
+[slurmservers:children]
+slurmcontrollers
+slurmexechosts
+
+[slurmcontrollers]
+jupyterlab.sanbi.ac.za
+
+[slurmexechosts]
+bc-node1.sanbi.ac.za
+bc-node2.sanbi.ac.za
+
+[sanbiservers]
+jupyterlab.sanbi.ac.za

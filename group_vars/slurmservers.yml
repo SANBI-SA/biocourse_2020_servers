@@ -1,0 +1,18 @@
+slurm_ssh_keys:
+  - "{{ lookup('file', 'files/eugene_pub.key') }}"
+slurm_nodes:
+  - name: jupyterlab.sanbi.ac.za
+    CPUs: 2
+    RealMemory: 16000
+  - name: bc-node1.sanbi.ac.za
+    CPUs: 8
+    RealMemory: 16000
+  - name: bc-node2.sanbi.ac.za
+    CPUs: 8
+    RealMemory: 16000
+
+slurm_config:
+  ControlMachine: jupyterlab.sanbi.ac.za
+  #   FastSchedule: 2                      # Ignore errors if the host actually has cores != 2
+  SelectType: select/cons_res
+  SelectTypeParameters: CR_CPU_Memory  # Allocate individual cores/memory instead of entire node

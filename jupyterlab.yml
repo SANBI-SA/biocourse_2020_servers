@@ -1,0 +1,72 @@
+---
+# - hosts: sanbiservers
+#   become: true 
+#   roles:
+#     - role: sanbi-sa.common
+#       tags: "sanbi-common"
+#     - role: sanbi-sa.munge
+#       tags: "sanbi-munge"
+#     - role: sanbi-sa.cephfs-client
+#       tags: "sanbi-cephfs-client"
+
+- hosts: slurmcontrollers
+  become: true
+  pre_tasks:
+    - name: ensure /data is mounted
+      mount:
+        state: mounted
+        fstype: ext4
+        src: /dev/vdb1
+        path: /data
+      tags: nfs_server
+
+  vars:
+    nfs_exports:
+      - "/data  192.168.50.0/24(rw,sync,no_subtree_check)"
+  roles:
+    - role: geerlingguy.nfs
+      tags: nfs_server
+
+- hosts: slurmexechosts
+  become: true
+  tasks:
+    - name: set hostname
+      hostname:
+        name: "{{ inventory_hostname }}"
+      tags: nfs_client
+    - name: install nfs-common
+      apt:
+        name: nfs-common
+        state: present
+      tags: nfs_client
+    - name: mount /data
+      mount:
+        state: mounted
+        fstype: nfs
+        path: /data
+        src: 192.168.50.53:/data
+      tags: nfs_client
+
+- hosts: slurmservers
+  become: true
+  pre_tasks:
+    - name: set FQDN
+      hostname:
+        name: "{{ inventory_hostname }}"
+    - name: set SSHs key
+      authorized_key:
+        key: '{{ item }}'
+        user: '{{ ansible_user }}'
+      loop: '{{ slurm_ssh_keys | default([]) }}'
+  roles:
+    - galaxyproject.repos
+    - role: galaxyproject.slurm
+      tags: slurm
+
+# - hosts: jupyterhubservers
+#   become: true
+#   roles:
+#     - role: sanbi-sa.jupyterhub
+#       tags: jupyterhub
+#     - role: sanbi-sa.cloudns-acme
+#       tags: letsencrypt

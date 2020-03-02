@@ -1,0 +1,3 @@
+# acme
+acme_cloudns_auth_id: "{{ lookup('hashi_vault', 'secret=secret/ansible/cloudns/pvh_masters:auth_id') }}"
+acme_cloudns_password: "{{ lookup('hashi_vault', 'secret=secret/ansible/cloudns/pvh_masters:password') }}"
